@@ -1,0 +1,50 @@
+console.log("Server file started...");
+
+
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Create log file path
+const logFilePath = path.join(__dirname, 'requests.log');
+
+// Create server
+const server = http.createServer((req, res) => {
+
+    const { url, method } = req;
+
+    // Get current date & time
+    const currentTime = new Date().toISOString();
+
+    // Create log entry
+    const logEntry = `Route: ${url} | Method: ${method} | Time: ${currentTime}\n`;
+
+    // Append log to file (no overwrite)
+    fs.appendFile(logFilePath, logEntry, (err) => {
+        if (err) console.error('Error writing log:', err);
+    });
+
+    // Routing
+    if (url === '/' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Welcome to Home Page');
+    }
+    else if (url === '/about' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('About Page');
+    }
+    else if (url === '/contact' && method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('Contact Page');
+    }
+    else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+    }
+});
+
+// Start server
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
